@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import collections
 import os
 import re
 import sys
@@ -44,7 +43,13 @@ def parse_page(page, out, base_href):
         rating = image_to_rating(
             get_first_if_one(row.xpath(r'.//img[@height="16"]')))
         artist = ', '.join(sanitise_text(a) for a in artists)
-        out[artist][album] = rating
+        out.append(
+            {
+                'artist': artist,
+                'album': album,
+                'rating': rating,
+            }
+        )
 
     try:
         return tree.xpath('//a[@class="navlinknext"]')[0].get('href')
@@ -67,7 +72,7 @@ def main():
             'Gecko/20100101 Firefox/54.0',
         'Referer': 'https://rateyourmusic.com/~{}'.format(username),
     }
-    output = collections.defaultdict(dict)
+    output = []
 
     i = 1
     while next_uri:
